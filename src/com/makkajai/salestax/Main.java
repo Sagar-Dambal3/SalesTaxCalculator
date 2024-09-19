@@ -1,36 +1,71 @@
 package com.makkajai.salestax;
 
+import java.util.Scanner;
+
 /**
- * The main entry point for the Sales Tax Calculator application.
- * It demonstrates how to use the core classes to calculate taxes and print receipts.
+ * Main class to run the Sales Tax Calculator application.
+ * Takes input from the user, processes the receipt, and prints the output.
  */
 public class Main {
+
     public static void main(String[] args) {
-        // Example Input 1
-        Receipt receipt1 = new Receipt();
-        receipt1.addItem(new Item("book", 12.49, 1, false, true)); // Exempt item (book)
-        receipt1.addItem(new Item("music CD", 14.99, 1, false, false)); // Taxable item (music CD)
-        receipt1.addItem(new Item("chocolate bar", 0.85, 1, false, true)); // Exempt item (chocolate)
+        Scanner scanner = new Scanner(System.in); // Input scanner
 
-        System.out.println("Output 1:");
-        ReceiptFormatter.printReceipt(receipt1); // Print the receipt
+        Receipt receipt = new Receipt(); // New receipt instance
 
-        // Example Input 2
-        Receipt receipt2 = new Receipt();
-        receipt2.addItem(new Item("imported box of chocolates", 10.00, 1, true, true)); // Exempt and imported item
-        receipt2.addItem(new Item("imported bottle of perfume", 47.50, 1, true, false)); // Imported and taxable item
+        System.out.println("Enter the items (type 'done' to finish):");
 
-        System.out.println("\nOutput 2:");
-        ReceiptFormatter.printReceipt(receipt2);
+        while (true) {
+            System.out.print("Enter item description (e.g. '1 book at 12.49'): ");
+            String input = scanner.nextLine();
+            if (input.equalsIgnoreCase("done")) {
+                break; // End input on 'done'
+            }
 
-        // Example Input 3
-        Receipt receipt3 = new Receipt();
-        receipt3.addItem(new Item("imported bottle of perfume", 27.99, 1, true, false)); // Imported and taxable item
-        receipt3.addItem(new Item("bottle of perfume", 18.99, 1, false, false)); // Taxable item
-        receipt3.addItem(new Item("packet of headache pills", 9.75, 1, false, true)); // Exempt item (medicine)
-        receipt3.addItem(new Item("box of imported chocolates", 11.25, 1, true, true)); // Exempt and imported item
+            // Parse the input line to extract item details
+            String[] parts = input.split(" at ");
+            if (parts.length != 2) {
+                System.out.println("Invalid input format. Please try again.");
+                continue;
+            }
 
-        System.out.println("\nOutput 3:");
-        ReceiptFormatter.printReceipt(receipt3); // Print the receipt
+            // Extracting quantity, name, and price
+            String itemDescription = parts[0].trim();
+            double price = Double.parseDouble(parts[1].trim());
+            String[] descriptionParts = itemDescription.split(" ", 2);
+            int quantity = Integer.parseInt(descriptionParts[0]);
+            String name = descriptionParts[1];
+
+            // Check if the item is imported
+            boolean isImported = name.contains("imported");
+
+            // Check if the item is tax-exempt (books, food, or medical products)
+            boolean isExempt = isExemptItem(name);
+
+            // Create a new Item and add it to the receipt
+            Item item = new Item(name, price, quantity, isImported, isExempt);
+            receipt.addItem(item);
+        }
+
+        // Print the formatted receipt
+        ReceiptFormatter.printReceipt(receipt);
+
+        scanner.close();
+    }
+
+    /**
+     * Determines if an item is exempt from basic sales tax.
+     * 
+     * @param itemName The name of the item.
+     * @return true if the item is exempt, false otherwise.
+     */
+    private static boolean isExemptItem(String itemName) {
+        String[] exemptItems = { "book", "chocolate", "pills" };
+        for (String exempt : exemptItems) {
+            if (itemName.contains(exempt)) {
+                return true; // The item is exempt
+            }
+        }
+        return false;
     }
 }

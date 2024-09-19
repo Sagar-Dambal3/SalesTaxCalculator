@@ -14,12 +14,12 @@ public class TaxCalculator {
     public static double calculateTax(Item item) {
         double tax = 0;
 
-        // Apply basic sales tax if the item is not exempt
+        // Apply basic sales tax if the item is not exempt (10%)
         if (!item.isExempt()) {
             tax += roundUpToNearestFiveCents(item.getPrice() * 0.10);
         }
 
-        // Apply import duty if the item is imported
+        // Apply import duty if the item is imported (5%)
         if (item.isImported()) {
             tax += roundUpToNearestFiveCents(item.getPrice() * 0.05);
         }
@@ -34,6 +34,6 @@ public class TaxCalculator {
      * @return The tax amount rounded up to the nearest 0.05.
      */
     private static double roundUpToNearestFiveCents(double amount) {
-        return Math.ceil(amount * 20.0) / 20.0;
+        return Math.ceil(amount * 20.0) / 20.0; // Round up to the nearest 0.05
     }
 }

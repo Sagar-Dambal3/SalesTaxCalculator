@@ -24,3 +24,4 @@ public class ReceiptFormatter {
         System.out.printf("Total: %.2f%n", receipt.getTotalPrice());
     }
 }
+
